@@ -9,6 +9,10 @@ public class ThneedStore
   private float dollarBalance = 1000.0f;
   private float time;
 
+  public ThneedStore(){
+
+  }
+
   synchronized public void buySell(ServerWorker worker, BUY_SELL typeExchange,
                                    int quantity, float unitPrice ){
     if((typeExchange == BUY_SELL.BUY && (unitPrice*quantity>dollarBalance))
@@ -24,7 +28,11 @@ public class ThneedStore
         thneeds+=quantity;
         dollarBalance-=quantity*unitPrice;
       }
-      ServerMaster.sM.broadcast(time+": inventory="+thneeds+" : treasury="+dollarBalance);
+      ServerMaster.sM.broadcast(time + ": inventory=" + thneeds + " : treasury=" + dollarBalance);
     }
+  }
+
+  private void fixTime(){
+    double blah = System.currentTimeMillis();
   }
 }
