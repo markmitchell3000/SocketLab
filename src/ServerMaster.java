@@ -8,10 +8,13 @@ import java.util.LinkedList;
 public class ServerMaster
 {
   private ServerSocket serverSocket;
+  private ThneedStore thneedStore;
   private LinkedList<ServerWorker> allConnections = new LinkedList<ServerWorker>();
+  public static ServerMaster sM;
 
   public ServerMaster(int portNumber)
   {
+    sM = this;
     try
     {
       serverSocket = new ServerSocket(portNumber);
@@ -23,6 +26,7 @@ public class ServerMaster
       System.exit(-1);
     }
 
+    thneedStore = new ThneedStore();
     waitForConnection(portNumber);
   }
 
