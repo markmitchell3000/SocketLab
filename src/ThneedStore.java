@@ -8,9 +8,10 @@ public class ThneedStore
   private int thneeds;
   private float dollarBalance = 1000.0f;
   private float time;
+  public static ThneedStore tS;
 
   public ThneedStore(){
-
+    tS = this;
   }
 
   synchronized public void buySell(ServerWorker worker, BUY_SELL typeExchange,

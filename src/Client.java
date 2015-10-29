@@ -96,10 +96,22 @@ public class Client
       if (cmd.length() < 1) continue;
 
       char c = cmd.charAt(0);
-      if (c == 'q') break;
+      if (c == 'q') {
+        closeAll();
+        return;
+      }
+      String[] words = cmd.split(" ");
+      if(words.length>2){
+        System.out.println("Too many arguments!");
+      }
+      //readUserInput(s);
 
       write.println(cmd);
     }
+  }
+
+  private void readUserInput(String[] cmd){
+
   }
 
   public void closeAll()
