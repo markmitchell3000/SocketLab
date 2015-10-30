@@ -18,10 +18,11 @@ public class ThneedStore
   synchronized public void buySell(ServerWorker worker, BUY_SELL typeExchange,
                                    int quantity, float unitPrice )
   {
-    if((typeExchange == BUY_SELL.BUY && (unitPrice*quantity>dollarBalance))
-            ||(typeExchange==BUY_SELL.SELL&&(quantity>thneeds))){
-      System.out.println(worker+"failed");
-      //broadcast to worker that request failed
+    if(typeExchange == BUY_SELL.BUY && (unitPrice*quantity>dollarBalance)){
+      worker.send("Error Not Enough Money in the Treasury!");
+    }
+    else if(typeExchange==BUY_SELL.SELL&&(quantity>thneeds)){
+      worker.send("Error Not Enough Thneeds to Sell!");
     }
     else{
       if(typeExchange == BUY_SELL.SELL){
