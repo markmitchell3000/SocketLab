@@ -16,7 +16,7 @@ public class Client
   private ClientListener listener;
 
   private volatile int sneedsInStore;
-  private volatile float treasury;
+  private volatile float treasury=0.00f;
   private boolean clientRunning = true;
 
   public Client(String host, int portNumber)
