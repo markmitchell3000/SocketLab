@@ -96,46 +96,19 @@ public class Client
       String cmd = keyboard.nextLine();
       if (cmd == null) continue;
       if (cmd.length() < 1) continue;
-
-      char c = cmd.charAt(0);
-      if (c == 'q') {
+      String[] words = cmd.split(" ");
+      //char c = cmd.charAt(0);
+      //if (c == 'q')break;
+      String s = words[0];
+      if(s.equals("quit:")){
         clientRunning = false;
         return;
       }
-      String[] words = cmd.split(" ");
-      if(words.length>3){
-        System.out.println("Too many arguments!");
-      }
-      else if(words.length>=1)
-      {
-        readUserInput(words);
+      else if(s.equals("inventory:")){
+        System.out.println("Number of Thneeds: "+sneedsInStore+" Treasury: "+treasury);
       }
 
       write.println(cmd);
-    }
-  }
-
-  private void readUserInput(String[] words){
-    if(words[0].equals("buy:"))
-    {
-
-    }
-    else if(words[0].equals("sell:"))
-    {
-
-    }
-    else if(words[0].equals("quit:"))
-    {
-      clientRunning = false;
-      return;
-    }
-    else if(words[0].equals("inventory:"))
-    {
-      System.out.println("Number of Thneeds: "+sneedsInStore+" Treasury: "+treasury);
-    }
-    else
-    {
-      System.out.println("Invalid Arguments");
     }
   }
 
@@ -215,7 +188,7 @@ public class Client
           int idxOfNum = msg.indexOf(':') + 1;
           int n = Integer.parseInt(msg.substring(idxOfNum));
           sneedsInStore = n;
-          System.out.println("Current Invintory of Sneeds (" + timeDiff()
+          System.out.println("Current Inventory of Sneeds (" + timeDiff()
               + ") = " + sneedsInStore);
         }
         else if (msg.startsWith("You just bought "))
@@ -226,6 +199,13 @@ public class Client
         {
           System.out.println("Failed: " + msg);
         }
+        else if(msg.equals("Second Argument not an integer")
+                ||msg.equals("Third Argument not a valid price")
+                ||msg.equals("Invalid Arguments")
+                ||msg.equals("Too many arguments!")){
+          System.out.println(msg);
+        }
+
         else
         {
           System.out.println("Unrecognized message from Server(" + timeDiff()

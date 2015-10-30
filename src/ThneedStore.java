@@ -6,7 +6,7 @@ public class ThneedStore
 {
   public enum BUY_SELL{BUY, SELL}
   private int thneeds;
-  private float dollarBalance = 1000.0f;
+  private float dollarBalance = 1000.00f;
   private long startTime;
   public static ThneedStore tS;
 
@@ -16,9 +16,11 @@ public class ThneedStore
   }
 
   synchronized public void buySell(ServerWorker worker, BUY_SELL typeExchange,
-                                   int quantity, float unitPrice ){
+                                   int quantity, float unitPrice )
+  {
     if((typeExchange == BUY_SELL.BUY && (unitPrice*quantity>dollarBalance))
             ||(typeExchange==BUY_SELL.SELL&&(quantity>thneeds))){
+      System.out.println(worker+"failed");
       //broadcast to worker that request failed
     }
     else{
