@@ -110,14 +110,16 @@ public class ServerWorker extends Thread
       try
       {
         String s = clientReader.readLine();
-        String[] words = s.split(" ");
-        if (words.length > 3)
+        if(s!=null)
         {
-          send("Too many arguments!");
-        }
-        else if (words.length >= 1)
-        {
-          readUserInput(words);
+          String[] words = s.split(" ");
+          if (words.length > 3)
+          {
+            send("Too many arguments!");
+          } else if (words.length >= 1)
+          {
+            readUserInput(words);
+          }
         }
       } catch (IOException e)
       {

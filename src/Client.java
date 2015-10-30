@@ -183,6 +183,7 @@ public class Client
       {
         System.out.println("Client: listening to socket");
         String msg = reader.readLine();
+        String[] s = msg.split(" ");
         if (msg.startsWith("Sneeds:"))
         {
           int idxOfNum = msg.indexOf(':') + 1;
@@ -205,7 +206,15 @@ public class Client
                 ||msg.equals("Too many arguments!")){
           System.out.println(msg);
         }
-
+        else if(s[1].startsWith("inventory=")){
+          String[] s1 = s[1].split("=");
+          sneedsInStore = Integer.parseInt(s1[1]);
+          String[] s2 = s[3].split("=");
+          treasury = Float.parseFloat(s2[1]);
+          System.out.println("Updated inventory and treasury");
+          System.out.println("Sneeds in Inventory = " + sneedsInStore);
+          System.out.println("Treasury balance: $"+treasury);
+        }
         else
         {
           System.out.println("Unrecognized message from Server(" + timeDiff()
