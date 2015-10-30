@@ -16,6 +16,8 @@ public class Client
   private ClientListener listener;
 
   private volatile int sneedsInStore;
+  private volatile float treasury;
+  private boolean clientRunning = true;
 
   public Client(String host, int portNumber)
   {
@@ -97,21 +99,44 @@ public class Client
 
       char c = cmd.charAt(0);
       if (c == 'q') {
-        closeAll();
+        clientRunning = false;
         return;
       }
       String[] words = cmd.split(" ");
-      if(words.length>2){
+      if(words.length>3){
         System.out.println("Too many arguments!");
       }
-      //readUserInput(s);
+      else if(words.length>=1)
+      {
+        readUserInput(words);
+      }
 
       write.println(cmd);
     }
   }
 
-  private void readUserInput(String[] cmd){
+  private void readUserInput(String[] words){
+    if(words[0].equals("buy:"))
+    {
 
+    }
+    else if(words[0].equals("sell:"))
+    {
+
+    }
+    else if(words[0].equals("quit:"))
+    {
+      clientRunning = false;
+      return;
+    }
+    else if(words[0].equals("inventory:"))
+    {
+      System.out.println("Number of Thneeds: "+sneedsInStore+" Treasury: "+treasury);
+    }
+    else
+    {
+      System.out.println("Invalid Arguments");
+    }
   }
 
   public void closeAll()
@@ -172,7 +197,7 @@ public class Client
     public void run()
     {
       System.out.println("ClientListener.run()");
-      while (true)
+      while (clientRunning)
       {
         read();
       }

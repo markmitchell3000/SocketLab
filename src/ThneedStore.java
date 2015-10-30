@@ -7,11 +7,12 @@ public class ThneedStore
   public enum BUY_SELL{BUY, SELL}
   private int thneeds;
   private float dollarBalance = 1000.0f;
-  private float time;
+  private long startTime;
   public static ThneedStore tS;
 
   public ThneedStore(){
     tS = this;
+    startTime = System.currentTimeMillis();
   }
 
   synchronized public void buySell(ServerWorker worker, BUY_SELL typeExchange,
@@ -29,11 +30,13 @@ public class ThneedStore
         thneeds+=quantity;
         dollarBalance-=quantity*unitPrice;
       }
+      float time = fixTime();
       ServerMaster.sM.broadcast(time + ": inventory=" + thneeds + " : treasury=" + dollarBalance);
     }
   }
 
-  private void fixTime(){
-    double blah = System.currentTimeMillis();
+  private float fixTime(){
+    long elapsedTime = System.currentTimeMillis()-startTime;
+    return elapsedTime/1000;
   }
 }

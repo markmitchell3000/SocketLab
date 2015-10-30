@@ -79,7 +79,7 @@ public class ServerMaster
   {
     //Valid port numbers are Port numbers are 1024 through 65535.
     //  ports under 1024 are reserved for system services http, ftp, etc.
-    int port = 5554; //default
+    int port = 5555; //default
     if (args.length > 0)
     try
     {
