@@ -117,13 +117,10 @@ public class ServerMaster
    */
   public void broadcast(String s)
   {
-    int i=0;
     accessRemoveList(null, MODIFY_TYPE.CLEAR);
     for (ServerWorker workers : allConnections)
     {
       workers.send(s);
-      System.out.println(i);
-      i++;
     }
   }
 
