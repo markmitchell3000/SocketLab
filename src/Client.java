@@ -6,6 +6,12 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
+/**
+ * @author Mark Mitchell
+ * Handles user orders for buying and selling thneeds, gets its information
+ * about the inventory from broadcasts from the ServerMaster that
+ * are then sent from the ServerWorkers.
+ */
 public class Client
 {
   private Socket clientSocket;
@@ -19,6 +25,11 @@ public class Client
   private volatile float treasury=0.00f;
   private boolean clientRunning = true;
 
+  /**
+   * Constructor for the client connects to a Server worker and initializes listeners.
+   * @param host String for the hosts address - 127.0.0.1 if on the same machine
+   * @param portNumber Integer for the port the client connects to.
+   */
   public Client(String host, int portNumber)
   {
     startNanoSec = System.nanoTime();
@@ -101,17 +112,22 @@ public class Client
       //if (c == 'q')break;
       String s = words[0];
       if(s.equals("quit:")){
+        //closeAll();
         clientRunning = false;
         return;
       }
       else if(s.equals("inventory:")){
-        System.out.println("Number of Thneeds: "+sneedsInStore+" Treasury: "+treasury);
+        String formattedString = String.format("%.02f", treasury);
+        System.out.println("Number of Thneeds: "+sneedsInStore+" Treasury: "+formattedString);
       }
 
       write.println(cmd);
     }
   }
 
+  /**
+   * Closes the socket connection to the server.
+   */
   public void closeAll()
   {
     System.out.println("Client.closeAll()");
@@ -141,6 +157,10 @@ public class Client
 
   }
 
+  /**
+   * Main for client runs from the client side and connects to a running server.
+   * @param args Command line args should be a host address and a port.
+   */
   public static void main(String[] args)
   {
     
@@ -162,11 +182,14 @@ public class Client
 
   }
 
-  
-  
-  
+  /**
+   * Nested class set up to listen for messages sent from the ServerWorker.
+   */
   class ClientListener extends Thread
   {
+    /**
+     * Thread that reads any messages from the ServerWorker
+     */
     public void run()
     {
       System.out.println("ClientListener.run()");
@@ -203,7 +226,8 @@ public class Client
         else if(msg.equals("Second Argument not an integer")
                 ||msg.equals("Third Argument not a valid price")
                 ||msg.equals("Invalid Arguments")
-                ||msg.equals("Too many arguments!")){
+                ||msg.equals("Too many arguments!"))
+        {
           System.out.println(msg);
         }
         else if(s[1].startsWith("inventory=")){
@@ -213,7 +237,8 @@ public class Client
           treasury = Float.parseFloat(s2[1]);
           System.out.println("Updated inventory and treasury");
           System.out.println("Sneeds in Inventory = " + sneedsInStore);
-          System.out.println("Treasury balance: $"+treasury);
+          String formattedString = String.format("%.02f", treasury);
+          System.out.println("Treasury balance: $"+formattedString);
         }
         else
         {

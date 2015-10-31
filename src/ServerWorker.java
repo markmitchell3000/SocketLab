@@ -4,19 +4,27 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+/**
+ * @author Mark Mitchell
+ * ServerWorker sends and receives messages from the Client.
+ * Buy and sell orders will be relayed to the ThneedStore.
+ */
 public class ServerWorker extends Thread
 {
   private Socket client;
   private PrintWriter clientWriter;
   private BufferedReader clientReader;
 
+  /**
+   * Constructor takes a socket and sets up the a PrintWriter and a BufferedReader.
+   * @param client Socket for the newly connected client.
+   */
   public ServerWorker(Socket client)
   {
     this.client = client;
 
     try
     {
-      //          PrintWriter(OutputStream out, boolean autoFlushOutputBuffer)
       clientWriter = new PrintWriter(client.getOutputStream(), true);
     }
     catch (IOException e)
@@ -35,15 +43,21 @@ public class ServerWorker extends Thread
       e.printStackTrace();
     }
   }
-  
-  //Called by ServerMaster
+
+  /**
+   * ServerMaster will use this to broadcast Inventory updates.
+   * ThneedStore will use this to tell a client that their order
+   * failed.
+   * @param msg  String message to be broadcast.
+   */
   public void send(String msg)
   {
     System.out.println("ServerWorker.send(" + msg + ")");
     clientWriter.println(msg);
   }
 
-  private void readUserInput(String[] words){
+  private void readUserInput(String[] words)
+  {
     if(words.length==3)
     {
       int quantity;
@@ -52,7 +66,8 @@ public class ServerWorker extends Thread
       {
         quantity = Integer.parseInt(words[1]);
       }
-      catch (NumberFormatException e){
+      catch (NumberFormatException e)
+      {
         send("Second Argument not an integer");
         return;
       }
@@ -66,17 +81,20 @@ public class ServerWorker extends Thread
           {
             price = Float.parseFloat(words[2]);
           }
-          else{
+          else
+          {
             send("Third Argument not a valid price");
             return;
           }
         }
-        else{
+        else
+        {
           send("Third Argument not a valid price");
           return;
         }
       }
-      catch (NumberFormatException e){
+      catch (NumberFormatException e)
+      {
         send("Third Argument not a valid price");
         return;
       }
@@ -94,8 +112,9 @@ public class ServerWorker extends Thread
     }
     else if(words[0].equals("quit:"))
     {
-      //remove client from linked list
-      //return;
+      System.out.println("firing");
+      ServerMaster.sM.removeWorker(this);
+      return;
     }
     else if(!words[0].equals("inventory:"))
     {
@@ -103,6 +122,9 @@ public class ServerWorker extends Thread
     }
   }
 
+  /**
+   * Needed for the thread that will listen to requests from the client.
+   */
   public void run()
   {
     while(true)
@@ -116,12 +138,19 @@ public class ServerWorker extends Thread
           if (words.length > 3)
           {
             send("Too many arguments!");
-          } else if (words.length >= 1)
+          }
+          else if (words.length >= 1)
           {
             readUserInput(words);
           }
         }
-      } catch (IOException e)
+        else
+        {
+          ServerMaster.sM.removeWorker(this);
+          return;
+        }
+      }
+      catch (IOException e)
       {
         e.printStackTrace();
       }

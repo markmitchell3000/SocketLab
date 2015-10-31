@@ -5,13 +5,24 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 
+/**
+ * ServerMaster creates a ServerWorker for each client connections.
+ * This class initializes the ThneedStore and broadcasts messages to
+ * the ServerWorkers.  ServerWorkers are held in a linked list.
+ */
 public class ServerMaster
 {
+  private enum MODIFY_TYPE{CLEAR, ADD}
   private ServerSocket serverSocket;
-  private ThneedStore thneedStore;
   private LinkedList<ServerWorker> allConnections = new LinkedList<ServerWorker>();
+  private LinkedList<ServerWorker> removeList = new LinkedList<ServerWorker>();
   public static ServerMaster sM;
 
+  /**
+   * Constructor assigns a port number to the ServerMaster, then attempts to
+   * open a socket and wait for a connection.
+   * @param portNumber Integer for the port used.
+   */
   public ServerMaster(int portNumber)
   {
     sM = this;
@@ -26,10 +37,15 @@ public class ServerMaster
       System.exit(-1);
     }
 
-    thneedStore = new ThneedStore();
+    new ThneedStore();
     waitForConnection(portNumber);
   }
 
+  /**
+   * Listens to the port and waits for a connection, creates a ThreadWorker
+   * to handle a client should they connect.  Then goes back to listening to the port.
+   * @param port Integer for the port to listen to.
+   */
   public void waitForConnection(int port)
   {
     String host = "";
@@ -62,19 +78,60 @@ public class ServerMaster
     }
   }
 
-  public void cleanConnectionList()
+  private void cleanConnectionList()
   {
-
+    for(ServerWorker w: removeList)
+    {
+      allConnections.remove(w);
+    }
+    removeList = new LinkedList<ServerWorker>();
   }
 
-  public void broadcast(String s)
+  synchronized private void accessRemoveList(ServerWorker w, MODIFY_TYPE mt)
   {
-    for (ServerWorker workers : allConnections)
+    switch (mt)
     {
-       workers.send(s);
+      case CLEAR:
+        cleanConnectionList();
+      case ADD:
+        removeList.add(w);
     }
   }
-  
+
+  /**
+   * When client disconnects the ServerWorker should be removed from the list.
+   * This can occur even while a message is being broadcast because these are
+   * added to a list of workers that need to be removed and will be by the next
+   * broadcast.
+   * @param w
+   */
+  public void removeWorker(ServerWorker w)
+  {
+    accessRemoveList(w, MODIFY_TYPE.ADD);
+  }
+
+  /**
+   * Called by the ThneedStore to broadcast the latest inventory and
+   * treasury balance.
+   * @param s String for the message being broadcast
+   */
+  public void broadcast(String s)
+  {
+    int i=0;
+    accessRemoveList(null, MODIFY_TYPE.CLEAR);
+    for (ServerWorker workers : allConnections)
+    {
+      workers.send(s);
+      System.out.println(i);
+      i++;
+    }
+  }
+
+  /**
+   * Main can be run from the command line setting up a single instance of the server
+   * and assigning it a port number.
+   * @param args
+   */
   public static void main(String args[])
   {
     //Valid port numbers are Port numbers are 1024 through 65535.
